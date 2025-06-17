@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive DLT Pipeline Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app">
+        <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">DLT Pipeline Design</h1>
+                    <nav class="hidden md:flex items-center space-x-4">
+                        <a href="#overview" class="nav-link font-medium text-slate-600 border-b-2 border-transparent px-2 py-1">Overview</a>
+                        <a href="#bronze" class="nav-link font-medium text-slate-600 border-b-2 border-transparent px-2 py-1">Bronze Layer</a>
+                        <a href="#silver" class="nav-link font-medium text-slate-600 border-b-2 border-transparent px-2 py-1">Silver Layer</a>
+                        <a href="#gold" class="nav-link font-medium text-slate-600 border-b-2 border-transparent px-2 py-1">Gold Layer</a>
+                        <a href="#remediation" class="nav-link font-medium text-slate-600 border-b-2 border-transparent px-2 py-1">Remediation</a>
+                    </nav>
+                    <div class="md:hidden">
+                        <select id="mobile-nav" class="bg-slate-100 border border-slate-300 rounded-md p-2 text-slate-700">
+                            <option value="overview">Overview</option>
+                            <option value="bronze">Bronze Layer</option>
+                            <option value="silver">Silver Layer</option>
+                            <option value="gold">Gold Layer</option>
+                            <option value="remediation">Remediation</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+            
+            <section id="overview" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Interactive Pipeline Architecture</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">An explorable guide to our end-to-end data pipeline. This design uses a medallion architecture (Bronze, Silver, Gold) to progressively refine data, with built-in quality checks and a robust remediation workflow. Click through the navigation to explore each stage.</p>
+                </div>
+                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-semibold mb-6 text-center text-slate-800">High-Level Architecture</h3>
+                    <div class="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0 justify-center">
+                        <div class="diagram-box text-center p-4 bg-slate-100 rounded-lg border border-slate-200">External Sources</div>
+                        <div class="text-2xl text-center text-slate-400 font-mono self-center">&rarr;</div>
+                        <div class="diagram-box text-center p-4 bg-sky-100 rounded-lg border border-sky-200">Bronze Layer</div>
+                        <div class="text-2xl text-center text-slate-400 font-mono self-center">&rarr;</div>
+                        <div class="relative text-center">
+                            <div class="diagram-box p-4 bg-green-100 rounded-lg border border-green-200">Silver Layer</div>
+                            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-8 w-max">
+                                <div class="text-2xl text-center text-slate-400 font-mono transform -rotate-90 md:rotate-0">&darr;</div>
+                                <div class="diagram-box mt-2 text-center p-4 bg-red-100 rounded-lg border border-red-200">Quarantine</div>
+                            </div>
+                        </div>
+                        <div class="text-2xl text-center text-slate-400 font-mono self-center mt-32 md:mt-0">&rarr;</div>
+                        <div class="diagram-box text-center p-4 bg-amber-100 rounded-lg border border-amber-200 mt-32 md:mt-0">Gold Layer</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="bronze" class="content-section hidden">
+                   <div class="text-left mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Step 1: Raw Data Ingestion (Bronze Layer)</h2>
+                    <p class="mt-4 max-w-3xl text-lg text-slate-600">The first stage of our pipeline is focused on capturing all incoming data in its original, raw format. The primary goal is reliable and complete ingestion, creating an immutable, historical record before any transformations occur. This ensures no data is lost and provides a source of truth for all downstream processing.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex flex-col items-center space-y-4">
+                             <div class="diagram-box clickable p-4 bg-slate-100 rounded-lg border border-slate-200 w-full text-center" data-title="External Data Source" data-content="This represents any source system generating raw data, such as application databases, event streams like Kafka, or files uploaded to cloud storage (S3, ADLS).">External Data Source 🗳️</div>
+                             <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                             <div class="diagram-box clickable p-4 bg-sky-100 rounded-lg border border-sky-200 w-full text-center" data-title="Databricks DLT (Auto Loader)" data-content="Delta Live Tables orchestrates the process. Specifically, Auto Loader (🚗) efficiently and incrementally ingests new files from cloud storage as they arrive, handling schema inference and evolution automatically.">DLT: Ingest & Schema Detect 🚗</div>
+                             <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                             <div class="diagram-box clickable p-4 bg-sky-200 rounded-lg border border-sky-300 w-full text-center" data-title="Bronze Layer Table" data-content="A Delta table, managed by Unity Catalog (🏛️), that stores the raw, untransformed data. This table serves as the single source of truth for the rest of the pipeline.">Bronze Table (sales_raw) 🏛️</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-slate-800">Functional Steps</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-sky-600 text-white font-bold mr-4">1</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Monitor Source:</strong> DLT continuously watches for new data in the designated source locations.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-sky-600 text-white font-bold mr-4">2</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Ingest Incrementally:</strong> Auto Loader processes only new files, making ingestion highly efficient and scalable.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-sky-600 text-white font-bold mr-4">3</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Schema Evolution:</strong> Automatically adapts to changes in the source data structure, preventing pipeline failures due to unexpected schema modifications.</p>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-sky-600 text-white font-bold mr-4">4</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Load to Bronze:</strong> Writes the ingested data into the raw Delta table within Unity Catalog.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="silver" class="content-section hidden">
+                <div class="text-left mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Step 2: Preprocessing & Quality Checks (Silver Layer)</h2>
+                    <p class="mt-4 max-w-3xl text-lg text-slate-600">The Silver layer is the most critical stage for data quality. Here, raw data is cleaned, standardized, and rigorously validated against a set of predefined business rules using DLT Expectations. This process bifurcates the data, ensuring only clean, conformed records move forward while isolating invalid records for remediation.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex flex-col items-center space-y-4">
+                            <div class="diagram-box p-4 bg-sky-200 rounded-lg border border-sky-300 w-full text-center">Bronze Table (sales_raw) 🏛️</div>
+                            <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                            <div class="diagram-box clickable p-4 bg-slate-100 rounded-lg border border-slate-200 w-full text-center" data-title="DLT Expectations" data-content="The core of the quality gate. DLT applies a series of data quality rules (e.g., NOT NULL, valid formats, value ranges). Records are evaluated against these rules to determine their validity.">DLT: Preprocess & Apply Quality Rules ✅❌</div>
+                            <div class="flex w-full mt-4 space-x-4">
+                                <div class="w-1/2 flex flex-col items-center space-y-2">
+                                    <div class="text-slate-500 font-medium">Valid &rarr;</div>
+                                    <div class="diagram-box clickable p-4 bg-green-100 border-green-300 border rounded-lg w-full text-center" data-title="Silver Valid Table" data-content="Contains records that passed ALL quality expectations. This is the clean, trusted dataset used for all downstream analytics and reporting.">Silver Valid Table 🏛️</div>
+                                </div>
+                                <div class="w-1/2 flex flex-col items-center space-y-2">
+                                   <div class="text-slate-500 font-medium">Invalid &rarr;</div>
+                                   <div class="diagram-box clickable p-4 bg-red-100 border-red-300 border rounded-lg w-full text-center" data-title="Silver Quarantine Table" data-content="Contains records that failed AT LEAST ONE quality expectation. These records are isolated here, along with a 'failure_reason', for analysis and remediation.">Silver Quarantine Table 🏛️</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-slate-800">Functional Steps</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-green-600 text-white font-bold mr-4">1</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Read from Bronze:</strong> The pipeline streams data from the raw Bronze table for processing.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-green-600 text-white font-bold mr-4">2</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Apply Preprocessing:</strong> Performs necessary transformations like casting data to correct types (e.g., string to timestamp), standardizing text, and other cleaning operations.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-green-600 text-white font-bold mr-4">3</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Define Expectations:</strong> Quality rules are applied using `expect_or_drop`. Examples: `quantity > 0`, `customer_id IS NOT NULL`, `country IN ('USA', 'CAN')`.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-green-600 text-white font-bold mr-4">4</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Bifurcate Data:</strong> Based on the expectation outcomes, DLT automatically routes records to either the valid or quarantine table, creating a clean separation.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="gold" class="content-section hidden">
+                <div class="text-left mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Step 3: Data Curation (Gold Layer)</h2>
+                    <p class="mt-4 max-w-3xl text-lg text-slate-600">The Gold layer represents the final, most refined stage of the pipeline. Data from the Silver layer is transformed into highly curated, business-level tables optimized for analytics. These tables often involve aggregations, joins with other datasets, and are designed to directly power BI dashboards, reports, and ML models.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                   <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex flex-col items-center space-y-4">
+                             <div class="diagram-box p-4 bg-green-100 rounded-lg border border-green-200 w-full text-center">Silver Valid Table 🏛️</div>
+                             <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                             <div class="diagram-box clickable p-4 bg-slate-100 rounded-lg border border-slate-200 w-full text-center" data-title="DLT Aggregations" data-content="DLT applies business logic to the clean data. This involves complex operations like grouping, summing, averaging, and joining with other dimension tables (e.g., joining sales data with product or customer information).">DLT: Apply Business Logic & Aggregations 📊</div>
+                             <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                             <div class="diagram-box clickable p-4 bg-amber-100 rounded-lg border border-amber-200 w-full text-center" data-title="Gold Layer Table" data-content="The final, trusted data asset, often a Materialized View for performance. This table (e.g., 'daily_sales_summary') is ready for consumption by end-users and applications, governed by Unity Catalog (🏛️).">Gold Table (daily_sales_summary) 🏛️</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-slate-800">Functional Steps</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-amber-600 text-white font-bold mr-4">1</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Read from Silver Valid:</strong> Uses the clean, validated data from the Silver layer as its source.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-amber-600 text-white font-bold mr-4">2</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Apply Business Logic:</strong> Performs aggregations (e.g., `SUM(revenue) GROUP BY day`) and joins to enrich the data and create business-centric views.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-amber-600 text-white font-bold mr-4">3</span>
+                                <p class="text-slate-600"><strong class="text-slate-700">Load to Gold Table:</strong> Creates the final, optimized tables or materialized views, making analytics fast and efficient for end-users.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="remediation" class="content-section hidden">
+                <div class="text-left mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Step 4: Data Remediation Workflow</h2>
+                    <p class="mt-4 max-w-3xl text-lg text-slate-600">The remediation workflow is a critical feedback loop that ensures data quality continuously improves. Data that fails quality checks isn't just discarded; it's captured, analyzed, and corrected. This proactive process helps identify and fix issues at their source, enhancing the overall reliability of the data platform.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex flex-col items-center space-y-4">
+                             <div class="diagram-box p-4 bg-red-100 rounded-lg border border-red-200 w-full text-center">Silver Quarantine Table 🏛️</div>
+                             <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                             <div class="diagram-box clickable p-4 bg-slate-100 rounded-lg border border-slate-200 w-full text-center" data-title="Monitoring & Alerting" data-content="Automated systems like Databricks SQL Alerts (🔔) or Lakehouse Monitoring (📈) watch the quarantine table and notify the Data Quality team when new invalid records arrive.">Monitoring & Alerting 🔔📈</div>
+                             <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                             <div class="diagram-box clickable p-4 bg-slate-100 rounded-lg border border-slate-200 w-full text-center" data-title="Analysis & Correction" data-content="The Data Quality team investigates (🔍) the failure reason to understand the root cause. Correction (⚙️) can involve fixing the source system, updating the DLT pipeline logic, or running a one-time cleansing job.">Analysis 🔍 & Correction ⚙️</div>
+                             <div class="text-2xl text-slate-400 font-light">&darr;</div>
+                             <div class="diagram-box clickable p-4 bg-slate-100 rounded-lg border border-slate-200 w-full text-center" data-title="Re-ingestion" data-content="Once fixed, the corrected data is re-introduced to the pipeline's starting point (the external source) to be processed again, this time successfully passing the quality gates.">Re-ingest & Re-process 🔄</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-slate-800">Analyzing Quarantined Data</h3>
+                        <p class="text-slate-600 mb-6">Visualizing the reasons for data quality failures is the first step in remediation. The chart below shows a sample breakdown of issues found in the quarantine table, helping teams prioritize their efforts.</p>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                           <div class="chart-container">
+                               <canvas id="remediationChart"></canvas>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-slate-100 py-6 mt-12 border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-slate-600 text-sm">
+                <div class="flex items-center space-x-2 mb-4 sm:mb-0">
+                    <img src="https://www.zs.com/content/dam/images/illustrations/ZS%20Logo%20SPOT.svg" onerror="this.onerror=null;this.src='https://placehold.co/24x24/FFFFFF/000000?text=ZS';" alt="ZS Logo" class="h-6 w-6">
+                    <span>&copy; 2025 ZS Associates. All rights reserved.</span>
+                </div>
+                <div class="text-center sm:text-right">
+                    <p>Designed for interactive understanding of DLT Pipelines.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative">
+            <button id="close-modal" class="absolute top-2 right-2 text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
+            <h3 id="modal-title" class="text-xl font-bold text-slate-900 mb-2"></h3>
+            <p id="modal-content" class="text-slate-600"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
